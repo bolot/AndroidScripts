@@ -1,0 +1,42 @@
+#
+# Based on: https://gist.github.com/1705383
+#
+
+_adb()
+{
+    local cur prev opts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    opts="-d -s -e start-server kill-server get-state help version shell install uninstall push pull devices root reboot reboot-bootloader remount status-window get-state root usb bugreport jdwp"
+
+    case "$prev" in 
+        -s)
+            if [[ ${COMP_CWORD} == 2 ]] ; then
+                local devices=$(cat /tmp/adbdevices.txt | grep 'device$' | awk '{print $1}')
+                COMPREPLY=( $(compgen -W "${devices}" -- "${cur}") )
+                return 0
+            fi
+            ;;
+        install)
+            COMPREPLY=( $(compgen -f ${cur}) )
+            return 0
+            ;;
+        uninstall)
+            # TODO pass '-d | -e | -s <serial>', if specified in the command so far
+            local names=$(adb shell ls /data/data | tr '\r' '\n' | grep -v '^com.android')
+            COMPREPLY=( $(compgen -W "${names}" -- "${cur}") )
+            return 0
+            ;;
+        push)
+            COMPREPLY=( $(compgen -f ${cur}) )
+            return 0
+            ;;
+        *) ;;
+    esac
+        
+    COMPREPLY=( $(compgen -W "$opts" "$cur") )
+    return 0
+}
+complete -F _adb adb
+

@@ -1,0 +1,5 @@
+#!/bin/sh
+# open adb shell and execute commands
+COLUMNS=`tput cols`
+stty raw -echo; (echo "stty cols ${COLUMNS} ; $*" && cat) | adb shell ; stty sane
+

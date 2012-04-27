@@ -1,0 +1,32 @@
+#
+#
+#
+
+_emulator()
+{
+    local cur prev opts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+    opts="-avd -version -cache -data -initdata -ramdisk -sdcard -nocache -wipe-data -debug -debug- -debug-no- -logcat -shell -shell-serial -show-kernel -trace -verbose -audio -audio-in -audio-out -noaudio -radio -useaudio -dns-server -http-proxy -netdelay -netfast -netspeed -port -report-console -cpu-delay -gps -nojni -qemu -gpu -timezone -dpi-device -no-boot-anim -no-window -scale -raw-keys -noskin -keyset -onion -onion-alpha -onion-rotation -help -help-all -help-debug-tags -help-disk-images -help-environment -help-keys -help-keyset-file -help-virtual-device"
+
+    if [[ ${cur} == -* ]] ; then
+        COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+        return 0
+    fi
+    case "$prev" in 
+        -avd)
+            local names=$( android list avd -c )
+            COMPREPLY=( $(compgen -W "${names}" -- "${cur}") )
+            return 0
+            ;;
+        -cache|-data|-initdata|-ramdisk|-sdcard)
+            COMPREPLY=( $(compgen -f ${cur}) )
+            return 0
+            ;;
+        *)
+        ;;
+    esac
+}
+complete -F _emulator emulator
+
